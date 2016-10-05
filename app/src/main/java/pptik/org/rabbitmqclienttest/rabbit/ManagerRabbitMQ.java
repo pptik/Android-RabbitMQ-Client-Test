@@ -1,6 +1,5 @@
 package pptik.org.rabbitmqclienttest.rabbit;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
