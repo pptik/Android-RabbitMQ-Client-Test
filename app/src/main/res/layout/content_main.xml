@@ -12,8 +12,36 @@
     tools:context="pptik.org.rabbitmqclienttest.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <TextView
+
+    <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:id="@+id/btnsend"
+        android:layout_alignParentRight="true"
+        android:src="@android:drawable/ic_menu_send"
+        android:layout_alignParentBottom="true"
+        />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/boxChat"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@id/btnsend"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_above="@id/boxChat"
+        android:layout_height="match_parent">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/chatMain"
+                android:text="Hello World!" />
+        </ScrollView>
+    </LinearLayout>
+
 </RelativeLayout>
