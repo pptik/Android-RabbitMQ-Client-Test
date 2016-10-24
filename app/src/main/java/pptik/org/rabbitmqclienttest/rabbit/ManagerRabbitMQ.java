@@ -30,14 +30,14 @@ public class ManagerRabbitMQ {
 
     protected Channel mChannel = null;
     protected Connection mConnection;
-    private static final String EXCHANGE_NAME = "sabuga.chat";
+    private static final String EXCHANGE_NAME = "semut.opang";
     private static final String ACTION_STRING_ACTIVITY = "broadcast_event";
 
 
-    String userName = "Sabuga";
-    String password = "";
-    String virtualHost = "/SabugaRangers";
-    String serverIp = "167.205.7.229";
+    String userName = "semut";
+    String password = "Semut";
+    String virtualHost = "/semut";
+    String serverIp = "167.205.7.226";
     int port = 5672;
 
 
@@ -91,8 +91,6 @@ public class ManagerRabbitMQ {
                     Log.i("Connect To host", "connected");
             //        dialog.dismiss();
                     registerChanelHost();
-
-
 
                     return true;
 
@@ -152,24 +150,40 @@ public class ManagerRabbitMQ {
 
         try{
 
-            mChannel.exchangeDeclare(EXCHANGE_NAME, "fanout", true);
+            mChannel.exchangeDeclare(EXCHANGE_NAME, "topic", true);
 
-            final String queueName = mChannel.queueDeclare().getQueue();
-            mChannel.queueBind(queueName, EXCHANGE_NAME, "");
+            while(true){
+                final String queueName = mChannel.queueDeclare("opang.user.199", true, false, true, null).getQueue();
+                mChannel.queueBind(queueName, EXCHANGE_NAME, "");
 
-            Consumer consumer = new DefaultConsumer(mChannel) {
-                @Override
-                public void handleDelivery(String consumerTag, Envelope envelope,
-                                           AMQP.BasicProperties properties, byte[] body) throws IOException {
+                Consumer consumer = new DefaultConsumer(mChannel) {
+                    @Override
+                    public void handleDelivery(String consumerTag, Envelope envelope,
+                                               AMQP.BasicProperties properties, byte[] body) throws IOException {
 
-                    String message = new String(body, "UTF-8");
-                    sendBroadcast(message);
+                        String message = new String(body, "UTF-8");
+                        //sendBroadcast(message);
+                        Log.i("Response Type: ", properties.getType());
+                        if(properties.getType().equals("callback")){
+//                        System.out.println(" [x] Received response from service '" + envelope.getRoutingKey() + "':'" + message);
+//                        channel.basicAck(envelope.getDeliveryTag(), false);
+                            Log.i("Messege Response: ", message);
+                            sendBroadcast("CALLBACK: "+message);
+                        }
 
+                        //consume bid
+                        if(properties.getType().equals("bid")) {
+//                        System.out.println(" [x] Received bid': " + envelope.getRoutingKey() + "':'" + message);
+                            Log.i("Messege Response: ", message);
+                            sendBroadcast("BID: "+message);
+                        }
 
-                }
-            };
+                    }
+                };
+                mChannel.basicConsume(queueName, true, consumer);
+                break;
+            }
 
-            mChannel.basicConsume(queueName, true, consumer);
 
         } catch (Exception e){
             e.printStackTrace();
@@ -190,10 +204,11 @@ public class ManagerRabbitMQ {
 
     }
 
-    public void sendMessage(String msg){
+    public void sendMessage(String msg, String routingKey,  AMQP.BasicProperties props){
         byte[] messageBodyBytes = msg.getBytes();
         try {
-            mChannel.basicPublish(EXCHANGE_NAME, "", null, messageBodyBytes);
+            Log.i("publish request: ", msg);
+            mChannel.basicPublish(EXCHANGE_NAME, routingKey, props, messageBodyBytes);
         } catch (IOException e) {
             e.printStackTrace();
         }
