@@ -24,6 +24,7 @@ import com.rabbitmq.client.Envelope;
 import java.io.IOException;
 
 import pptik.org.rabbitmqclienttest.rabbit.ManagerRabbitMQ;
+import pptik.org.rabbitmqclienttest.rabbit.RabbitService;
 
 public class MainActivity extends AppCompatActivity {
     ManagerRabbitMQ manage;
@@ -50,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
         chatMain = (TextView)findViewById(R.id.chatMain);
 
         manage = new ManagerRabbitMQ(MainActivity.this);
-        manage.connectToRabbitMQ();
+        initService();
+
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,10 +76,15 @@ public class MainActivity extends AppCompatActivity {
                         .correlationId(USER_ID)
                         .build();
 
-                manage.sendMessage(request, ROUTING_KEY, props);
+                //manage.sendMessage(request, ROUTING_KEY, props);
             }
         });
 
+    }
+
+    private void initService() {
+        Log.i("service: ", "init Service");
+        startService(new Intent(MainActivity.this, RabbitService.class));
     }
 
     @Override

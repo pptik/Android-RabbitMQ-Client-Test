@@ -153,7 +153,7 @@ public class ManagerRabbitMQ {
             mChannel.exchangeDeclare(EXCHANGE_NAME, "topic", true);
 
             while(true){
-                final String queueName = mChannel.queueDeclare("opang.user.199", true, false, true, null).getQueue();
+                final String queueName = mChannel.queueDeclare("opang.user.199", false, false, true, null).getQueue();
                 mChannel.queueBind(queueName, EXCHANGE_NAME, "");
 
                 Consumer consumer = new DefaultConsumer(mChannel) {
